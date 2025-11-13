@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/admin/security",
+      "dest": "/api/security.js"
+    },
+    {
+      "src": "/api/admin/login",
+      "dest": "/api/login.js"
+    },
+    {
+      "src": "/api/admin/password",
+      "dest": "/api/password.js"
+    },
+    {
+      "src": "/api/admin/logout",
+      "dest": "/api/logout.js"
+    },
+    {
+      "src": "/api/site-config",
+      "dest": "/api/site-config.js",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/api/admin/site-config",
+      "dest": "/api/admin-site-config.js",
+      "methods": ["PUT"]
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}

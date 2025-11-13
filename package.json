@@ -10,7 +10,8 @@
     "server": "node server/index.js",
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
     "start:prod": "npm run build && npm run server",
-    "prod:all": "concurrently \"npm run server\" \"npm run preview\""
+    "prod:all": "concurrently \"npm run server\" \"npm run preview\"",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
