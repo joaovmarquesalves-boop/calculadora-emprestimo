@@ -1,13 +1,14 @@
-import { createHash, randomBytes } from 'crypto';
+import { createHash } from 'crypto';
+import jwt from 'jsonwebtoken';
 
 const DEFAULT_PASSWORD_HASH = 'a096178e4ff371d9450541f8b253c07476bee0111d311f02c3642dce8b4fd147';
 const DEFAULT_MAX_ATTEMPTS = 5;
 const DEFAULT_LOCKOUT_MINUTES = 15;
 const DEFAULT_SESSION_MINUTES = 60;
 
-const activeSessions = new Map();
-let failedAttempts = 0;
-let lockoutUntil = 0;
+const getJwtSecret = () => {
+  return process.env.JWT_SECRET || 'default-secret-change-in-production-' + DEFAULT_PASSWORD_HASH;
+};
 
 const parsePositiveInteger = (value, fallback) => {
   const parsed = Number.parseInt(value ?? '', 10);
@@ -34,48 +35,33 @@ export const loadAuthConfig = () => {
 
 export const hashPassword = (password) => createHash('sha256').update(password).digest('hex');
 
-export const refreshLockout = () => {
-  if (lockoutUntil && Date.now() >= lockoutUntil) {
-    failedAttempts = 0;
-    lockoutUntil = 0;
-  }
-};
-
 export const buildSecurityStatus = (config) => {
-  refreshLockout();
-  const locked = lockoutUntil > Date.now();
-  const remainingMs = locked ? lockoutUntil - Date.now() : 0;
-  const remainingAttempts = locked ? 0 : Math.max(config.maxAttempts - failedAttempts, 0);
-
   return {
-    locked,
-    remainingMs,
-    remainingAttempts,
+    locked: false,
+    remainingMs: 0,
+    remainingAttempts: config.maxAttempts,
     maxAttempts: config.maxAttempts,
     lockoutMinutes: config.lockoutMinutes,
   };
 };
 
 export const createSessionToken = () => {
-  const token = randomBytes(32).toString('hex');
-  const expiresAt = Date.now() + getSessionDurationMs();
-  activeSessions.set(token, expiresAt);
-  return token;
+  const payload = {
+    admin: true,
+    iat: Math.floor(Date.now() / 1000),
+  };
+  
+  const expiresIn = Math.floor(getSessionDurationMs() / 1000);
+  return jwt.sign(payload, getJwtSecret(), { expiresIn });
 };
 
-export const refreshSession = (token) => {
-  if (!activeSessions.has(token)) {
-    return false;
+export const verifyToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, getJwtSecret());
+    return decoded;
+  } catch (error) {
+    return null;
   }
-
-  const expiresAt = activeSessions.get(token);
-  if (!expiresAt || Date.now() > expiresAt) {
-    activeSessions.delete(token);
-    return false;
-  }
-
-  activeSessions.set(token, Date.now() + getSessionDurationMs());
-  return true;
 };
 
 export const requireAuth = (handler) => async (req, res) => {
@@ -85,16 +71,13 @@ export const requireAuth = (handler) => async (req, res) => {
   }
 
   const token = header.slice(7).trim();
-  if (!refreshSession(token)) {
+  const decoded = verifyToken(token);
+  
+  if (!decoded || !decoded.admin) {
     return res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
   }
 
   req.adminToken = token;
+  req.tokenData = decoded;
   return handler(req, res);
 };
-
-export const getFailedAttempts = () => failedAttempts;
-export const setFailedAttempts = (value) => { failedAttempts = value; };
-export const getLockoutUntil = () => lockoutUntil;
-export const setLockoutUntil = (value) => { lockoutUntil = value; };
-export const getActiveSessions = () => activeSessions;
