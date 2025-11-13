@@ -1,44 +1,32 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/admin/security",
-      "dest": "/api/security.js"
+      "source": "/api/admin/security",
+      "destination": "/api/security"
     },
     {
-      "src": "/api/admin/login",
-      "dest": "/api/login.js"
+      "source": "/api/admin/login",
+      "destination": "/api/login"
     },
     {
-      "src": "/api/admin/password",
-      "dest": "/api/password.js"
+      "source": "/api/admin/password",
+      "destination": "/api/password"
     },
     {
-      "src": "/api/admin/logout",
-      "dest": "/api/logout.js"
+      "source": "/api/admin/logout",
+      "destination": "/api/logout"
     },
     {
-      "src": "/api/site-config",
-      "dest": "/api/site-config.js",
-      "methods": ["GET"]
+      "source": "/api/site-config",
+      "destination": "/api/site-config"
     },
     {
-      "src": "/api/admin/site-config",
-      "dest": "/api/admin-site-config.js",
-      "methods": ["PUT"]
+      "source": "/api/admin/site-config",
+      "destination": "/api/admin-site-config"
     },
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
     }
   ]
 }
