@@ -104,12 +104,56 @@ export const DEFAULT_SITE_CONFIG = {
       },
     ],
   },
+  audiences: {
+    title: 'Quem pode contratar com a Consignado 99?',
+    description: 'Atendemos diferentes perfis com condições personalizadas. Escolha o seu perfil para ver como funciona a contratação.',
+    items: [
+      {
+        title: 'Aposentados e pensionistas do INSS',
+        description: 'Linha exclusiva com descontos em folha e liberação rápida direto na conta benefício.',
+        highlights: [
+          'Margem consignável automática',
+          'Sem consulta ao SPC/Serasa',
+          'Taxas reduzidas garantidas por lei'
+        ]
+      },
+      {
+        title: 'Servidores federais (SIAPE)',
+        description: 'Convênios ativos para todos os órgãos federais com acompanhamento dedicado até a liberação.',
+        highlights: [
+          'Prazo de até 96 parcelas',
+          'Contratação 100% digital',
+          'Especialistas em SIAPE para suporte'
+        ]
+      },
+      {
+        title: 'Servidores estaduais e municipais',
+        description: 'Atendimento para secretarias de educação, segurança e prefeituras conveniadas em todo o Brasil.',
+        highlights: [
+          'Avaliação rápida da margem disponível',
+          'Renegociação de contratos antigos',
+          'Suporte jurídico em convênios locais'
+        ]
+      },
+      {
+        title: 'Forças Armadas e militares',
+        description: 'Soluções para Exército, Marinha, Aeronáutica e forças auxiliares com canais de atendimento dedicados.',
+        highlights: [
+          'Margem exclusiva para militares ativos e inativos',
+          'Documentação simplificada',
+          'Equipe especialista em consignado militar'
+        ]
+      }
+    ]
+  },
   footer: {
     title: 'Consignado 99 Correspondente Bancário',
     registration: 'CNPJ 45.123.456/0001-99 • Autorizado pelo Banco Central do Brasil',
     address: 'Endereço: Av. Paulista, 1500 - Bela Vista, São Paulo - SP',
     schedule: 'Horário de atendimento: Segunda à sexta das 8h às 18h. Sábados das 9h às 13h.',
     contact: 'Ouvidoria: ouvidoria@consignado99.com.br • SAC: 0800 123 0099',
+    whatsapp: '',
+    footerLogoUrl: ''
   },
   company: {
     enabled: true,
@@ -129,4 +173,76 @@ export const DEFAULT_SITE_CONFIG = {
       'Compromisso com a educação financeira do servidor público',
     ],
   },
+  leadForm: {
+    title: 'Receba sua simulação personalizada',
+    description: 'Informe seus dados que nossa equipe especializada enviará todos os detalhes pelo WhatsApp.',
+    buttonLabel: 'Receber Simulação no WhatsApp',
+    fields: [
+      {
+        name: 'name',
+        label: 'Nome completo',
+        type: 'text',
+        required: true
+      },
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'email',
+        required: true
+      },
+      {
+        name: 'phone',
+        label: 'Telefone',
+        type: 'tel',
+        required: true
+      },
+      {
+        name: 'organization',
+        label: 'Órgão/Convênio',
+        type: 'select',
+        required: true,
+        options: ['INSS', 'SIAPE', 'SEDUC', 'PREFEITURA', 'OUTRO']
+      }
+    ],
+    steps: [
+      {
+        title: 'Contato',
+        fields: ['name', 'phone']
+      },
+      {
+        title: 'Dados',
+        fields: ['email']
+      },
+      {
+        title: 'Convênio',
+        fields: ['organization']
+      }
+    ]
+  },
+  loanTypes: [
+    {
+      id: 'inss',
+      slug: 'inss',
+      label: 'INSS',
+      interestRate: 0.017,
+      order: 1,
+      active: true
+    },
+    {
+      id: 'siape',
+      slug: 'siape',
+      label: 'Servidor Público',
+      interestRate: 0.016,
+      order: 2,
+      active: true
+    },
+    {
+      id: 'militar',
+      slug: 'militar',
+      label: 'Forças Armadas',
+      interestRate: 0.018,
+      order: 3,
+      active: true
+    }
+  ]
 };
