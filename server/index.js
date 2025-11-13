@@ -418,14 +418,6 @@ app.post('/api/admin/logout', requireSession, (request, response) => {
   return response.status(204).end();
 });
 
-const distDirectory = path.resolve(process.cwd(), 'dist');
-if (fs.existsSync(distDirectory)) {
-  app.use(express.static(distDirectory));
-  app.get('*', (request, response) => {
-    response.sendFile(path.join(distDirectory, 'index.html'));
-  });
-}
-
 // Persistência da configuração do site em arquivo (pública para leitura, protegida para escrita)
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 const CONFIG_FILE = path.join(DATA_DIR, 'site-config.json');
@@ -453,7 +445,7 @@ const ensureDefaultSiteConfig = async () => {
 app.get('/api/site-config', async (req, res) => {
   try {
     if (!fs.existsSync(CONFIG_FILE)) {
-      return res.status(404).json({});
+      return res.json(DEFAULT_SITE_CONFIG);
     }
 
     const content = await readFile(CONFIG_FILE, 'utf8');
@@ -462,11 +454,11 @@ app.get('/api/site-config', async (req, res) => {
       return res.json(parsed);
     } catch (parseErr) {
       console.error('Falha ao parsear site-config.json:', parseErr);
-      return res.status(500).json({ error: 'Arquivo de configuração inválido.' });
+      return res.json(DEFAULT_SITE_CONFIG);
     }
   } catch (error) {
     console.error('Erro ao ler site-config:', error);
-    return res.status(500).json({ error: 'Não foi possível ler a configuração do site.' });
+    return res.json(DEFAULT_SITE_CONFIG);
   }
 });
 
@@ -485,6 +477,14 @@ app.put('/api/admin/site-config', requireSession, async (req, res) => {
     return res.status(500).json({ error: 'Não foi possível salvar a configuração do site.' });
   }
 });
+
+const distDirectory = path.resolve(process.cwd(), 'dist');
+if (fs.existsSync(distDirectory)) {
+  app.use(express.static(distDirectory));
+  app.get('*', (request, response) => {
+    response.sendFile(path.join(distDirectory, 'index.html'));
+  });
+}
 
 // Final express error handler — garante que qualquer erro não tratado devolva JSON
 // e evita respostas vazias que quebram o cliente durante parsing.
